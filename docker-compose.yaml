@@ -1,0 +1,42 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - /prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yaml'
+
+  pushgateway:
+    image: prom/pushgateway:v1.9.0
+    ports:
+      - 9091:9091
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources 
+      - /var/lib/grafana
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.1
+    ports:
+      - 9100:9100
+
